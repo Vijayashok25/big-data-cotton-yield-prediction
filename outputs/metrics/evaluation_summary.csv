@@ -1,0 +1,4 @@
+model_name,rmse,mae,r2
+Random Forest Regressor,0.6687,0.3823,0.616
+Linear Regression,0.7926,0.4629,0.4605
+Gradient-Boosted Trees,0.9066,0.4692,0.2941

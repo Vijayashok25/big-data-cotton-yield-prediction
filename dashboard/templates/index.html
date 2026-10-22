@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Big Data Cotton Yield Prediction System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <header class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <i class="fa-solid fa-seedling"></i>
+                <span>AgriBigData <strong>CottonYield</strong></span>
+            </div>
+            <div class="badges">
+                <span class="badge badge-spark"><i class="fa-solid fa-bolt"></i> Apache Spark 4.2</span>
+                <span class="badge badge-hadoop"><i class="fa-solid fa-server"></i> HDFS Layer</span>
+                <span class="badge badge-hive"><i class="fa-solid fa-database"></i> Apache Hive</span>
+                <span class="badge badge-db"><i class="fa-solid fa-table"></i> {{ db_mode }}</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- Hero Section -->
+        <section class="hero-section">
+            <h1>Big Data Cotton Yield Prediction System</h1>
+            <p class="subtitle">Distributed Machine Learning & Big Data Engineering Pipeline for Precision Agriculture</p>
+            
+            <div class="pipeline-flow">
+                <div class="step"><i class="fa-solid fa-file-csv"></i><span>Raw Data</span></div>
+                <div class="arrow">→</div>
+                <div class="step"><i class="fa-solid fa-hard-drive"></i><span>HDFS</span></div>
+                <div class="arrow">→</div>
+                <div class="step"><i class="fa-solid fa-database"></i><span>Hive SQL</span></div>
+                <div class="arrow">→</div>
+                <div class="step"><i class="fa-solid fa-bolt"></i><span>PySpark</span></div>
+                <div class="arrow">→</div>
+                <div class="step"><i class="fa-solid fa-brain"></i><span>Spark MLlib</span></div>
+                <div class="arrow">→</div>
+                <div class="step"><i class="fa-solid fa-server"></i><span>MySQL</span></div>
+                <div class="arrow">→</div>
+                <div class="step active"><i class="fa-solid fa-chart-line"></i><span>Dashboard</span></div>
+            </div>
+        </section>
+
+        <!-- KPI Cards -->
+        <section class="kpi-grid">
+            <div class="kpi-card">
+                <div class="kpi-icon"><i class="fa-solid fa-layer-group"></i></div>
+                <div class="kpi-content">
+                    <span class="kpi-label">Total Raw Records</span>
+                    <span class="kpi-value">{{ eda.total_crop_records | default(21750) }}</span>
+                    <span class="kpi-hint">Across 62 Indian Crops</span>
+                </div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-icon"><i class="fa-solid fa-leaf"></i></div>
+                <div class="kpi-content">
+                    <span class="kpi-label">Cotton Records</span>
+                    <span class="kpi-value">{{ eda.total_cotton_records | default(582) }}</span>
+                    <span class="kpi-hint">Historical 2000–2026</span>
+                </div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-icon"><i class="fa-solid fa-trophy"></i></div>
+                <div class="kpi-content">
+                    <span class="kpi-label">Best Model</span>
+                    <span class="kpi-value" style="font-size: 1.25rem;">Random Forest</span>
+                    <span class="kpi-hint">Lowest RMSE = 0.6687</span>
+                </div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-icon"><i class="fa-solid fa-chart-pie"></i></div>
+                <div class="kpi-content">
+                    <span class="kpi-label">Test Split R²</span>
+                    <span class="kpi-value">61.6%</span>
+                    <span class="kpi-hint">Zero Data Leakage (No Production proxy)</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Main Workspace: Prediction + Model Comparison -->
+        <section class="grid-2col">
+            <!-- Prediction Card -->
+            <div class="card">
+                <div class="card-header">
+                    <h2><i class="fa-solid fa-calculator"></i> Real-Time Cotton Yield Predictor</h2>
+                    <span class="tag">Spark MLlib Inference</span>
+                </div>
+                <div class="card-body">
+                    <form id="predictionForm">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="state">Indian State</label>
+                                <select id="state" name="state" required>
+                                    {% for s in states %}
+                                    <option value="{{ s }}" {% if s == 'Punjab' %}selected{% endif %}>{{ s }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="season">Crop Season</label>
+                                <select id="season" name="season" required>
+                                    {% for sn in seasons %}
+                                    <option value="{{ sn }}" {% if sn == 'Kharif' %}selected{% endif %}>{{ sn }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="year">Harvest Year</label>
+                                <input type="number" id="year" name="year" value="2026" min="2000" max="2035" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="area">Cultivated Area (Hectares)</label>
+                                <input type="number" step="any" id="area" name="area" value="520000" required>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="rainfall">Annual Rainfall (mm)</label>
+                                <input type="number" step="any" id="rainfall" name="rainfall" value="510" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="fertilizer">Fertilizer Consumption (kg)</label>
+                                <input type="number" step="any" id="fertilizer" name="fertilizer" value="71000000" required>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="pesticide">Pesticide Usage (kg)</label>
+                            <input type="number" step="any" id="pesticide" name="pesticide" value="135000" required>
+                        </div>
+
+                        <button type="submit" id="predictBtn" class="btn btn-primary">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i> Predict Cotton Yield
+                        </button>
+                    </form>
+
+                    <!-- Prediction Output Area -->
+                    <div id="predictionResult" class="result-box" style="display: none;">
+                        <h3>Prediction Results</h3>
+                        <div class="result-grid">
+                            <div class="result-item">
+                                <span class="res-label">Predicted Yield</span>
+                                <span class="res-value" id="resYield">--</span>
+                                <span class="res-unit">tonnes / ha</span>
+                            </div>
+                            <div class="result-item">
+                                <span class="res-label">Est. Total Production</span>
+                                <span class="res-value" id="resProd">--</span>
+                                <span class="res-unit">tonnes</span>
+                            </div>
+                        </div>
+                        <p class="model-note" id="resModel">Model: Spark MLlib Pipeline</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Model Evaluation Comparison -->
+            <div class="card">
+                <div class="card-header">
+                    <h2><i class="fa-solid fa-scale-balanced"></i> Spark MLlib Model Comparison</h2>
+                    <span class="tag">80/20 Test Holdout</span>
+                </div>
+                <div class="card-body">
+                    <p class="desc">
+                        Models trained strictly on input factors (State, Season, Rainfall, Fertilizer, Pesticide, Area). 
+                        <strong>Production is excluded</strong> to prevent target leakage.
+                    </p>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Model Architecture</th>
+                                <th>RMSE</th>
+                                <th>MAE</th>
+                                <th>R²</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for m in metrics %}
+                            <tr class="{% if loop.first %}winner-row{% endif %}">
+                                <td><strong>{{ m.model_name }}</strong></td>
+                                <td>{{ "%.4f"|format(m.rmse) }}</td>
+                                <td>{{ "%.4f"|format(m.mae) }}</td>
+                                <td>{{ "%.4f"|format(m.r2) }}</td>
+                                <td>
+                                    {% if loop.first %}
+                                    <span class="badge badge-success"><i class="fa-solid fa-check"></i> Best</span>
+                                    {% else %}
+                                    <span class="badge badge-secondary">Candidate</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+
+                    <div class="info-alert">
+                        <i class="fa-solid fa-circle-info"></i>
+                        <div>
+                            <strong>Model Selection Rationale:</strong><br>
+                            Random Forest achieves the lowest Root Mean Squared Error (0.6687) and explains 61.6% of the variance on unseen test data, capturing non-linear regional soil-climate interactions without overfitting.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- EDA Visualizations Gallery -->
+        <section class="card">
+            <div class="card-header">
+                <h2><i class="fa-solid fa-chart-area"></i> Exploratory Data Analysis & Feature Relationships</h2>
+                <span class="tag">Generated from Actual Dataset</span>
+            </div>
+            <div class="card-body">
+                <div class="eda-gallery">
+                    <div class="eda-item">
+                        <img src="/eda-images/01_target_yield_distribution.png" alt="Target Yield Distribution">
+                        <div class="eda-caption">Yield Distribution & Outlier Detection</div>
+                    </div>
+                    <div class="eda-item">
+                        <img src="/eda-images/02_correlation_heatmap.png" alt="Correlation Heatmap">
+                        <div class="eda-caption">Feature Correlation Heatmap</div>
+                    </div>
+                    <div class="eda-item">
+                        <img src="/eda-images/03_state_wise_cotton_yield.png" alt="State-wise Cotton Yield">
+                        <div class="eda-caption">State-wise Cotton Yield Ranking</div>
+                    </div>
+                    <div class="eda-item">
+                        <img src="/eda-images/04_rainfall_vs_yield.png" alt="Rainfall vs Yield">
+                        <div class="eda-caption">Annual Rainfall vs Cotton Yield</div>
+                    </div>
+                    <div class="eda-item">
+                        <img src="/eda-images/05_fertilizer_intensity_vs_yield.png" alt="Fertilizer vs Yield">
+                        <div class="eda-caption">Fertilizer per Hectare Intensity</div>
+                    </div>
+                    <div class="eda-item">
+                        <img src="/eda-images/06_yearly_yield_trend.png" alt="Yearly Trend">
+                        <div class="eda-caption">Temporal Progression (2000–2026)</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Recent Predictions Table -->
+        {% if recent_predictions %}
+        <section class="card">
+            <div class="card-header">
+                <h2><i class="fa-solid fa-clock-rotate-left"></i> Relational Storage Audit Log (MySQL / SQLite)</h2>
+                <span class="tag">Recent Predictions</span>
+            </div>
+            <div class="card-body">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>State</th>
+                            <th>Season</th>
+                            <th>Year</th>
+                            <th>Area (ha)</th>
+                            <th>Predicted Yield</th>
+                            <th>Est. Production</th>
+                            <th>Timestamp</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for r in recent_predictions %}
+                        <tr>
+                            <td>{{ r.state }}</td>
+                            <td>{{ r.season }}</td>
+                            <td>{{ r.harvest_year }}</td>
+                            <td>{{ "{:,.0f}".format(r.area_hectares) }}</td>
+                            <td><strong>{{ "%.4f"|format(r.predicted_yield) }}</strong> t/ha</td>
+                            <td>{{ "{:,.1f}".format(r.estimated_production_tonnes) }} t</td>
+                            <td class="text-muted">{{ r.predicted_at }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+        {% endif %}
+
+        <!-- REST API Quick Reference -->
+        <section class="card">
+            <div class="card-header">
+                <h2><i class="fa-solid fa-code"></i> Production REST API Reference</h2>
+                <span class="tag">JSON Endpoints</span>
+            </div>
+            <div class="card-body">
+                <div class="api-endpoints">
+                    <div class="endpoint">
+                        <span class="method get">GET</span>
+                        <code>/api/health</code>
+                        <span class="ep-desc">Service health and Spark/Database connection status</span>
+                    </div>
+                    <div class="endpoint">
+                        <span class="method get">GET</span>
+                        <code>/api/model-metrics</code>
+                        <span class="ep-desc">Model comparison metrics and evaluation summaries</span>
+                    </div>
+                    <div class="endpoint">
+                        <span class="method post">POST</span>
+                        <code>/api/predict</code>
+                        <span class="ep-desc">Real-time prediction accepting JSON input features</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <p>Big Data Cotton Yield Prediction System &copy; 2026 | Built with Hadoop, Apache Spark, Apache Hive & MySQL</p>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

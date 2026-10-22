@@ -1,0 +1,59 @@
+{
+    "dataset_name": "india-crop-yield-prediction",
+    "total_crop_records": 21750,
+    "total_cotton_records": 582,
+    "distinct_states": 25,
+    "year_min": 2000,
+    "year_max": 2026,
+    "yield_stats": {
+        "mean": 1.5452358127147767,
+        "std": 1.165647707207389,
+        "min": 0.0,
+        "p25": 0.55368675,
+        "median": 1.3312499999999998,
+        "p75": 2.2392955,
+        "max": 5.295
+    },
+    "top_5_states_by_yield": [
+        {
+            "State": "Punjab",
+            "mean": 3.5383235185185185
+        },
+        {
+            "State": "Gujarat",
+            "mean": 3.064522777777778
+        },
+        {
+            "State": "West Bengal",
+            "mean": 3.007076384615385
+        },
+        {
+            "State": "Haryana",
+            "mean": 2.3663306296296294
+        },
+        {
+            "State": "Andhra Pradesh",
+            "mean": 2.1377847407407407
+        }
+    ],
+    "seasons_distribution": {
+        "Kharif": 550,
+        "Whole Year": 22,
+        "Summer": 9,
+        "Rabi": 1
+    },
+    "missing_values": {
+        "Year": 0,
+        "State": 0,
+        "Crop": 0,
+        "Season": 0,
+        "Area": 0,
+        "Production": 0,
+        "Annual_Rainfall": 0,
+        "Fertilizer": 0,
+        "Pesticide": 0,
+        "Yield": 0,
+        "Fertilizer_per_Area": 0,
+        "Pesticide_per_Area": 0
+    }
+}

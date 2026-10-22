@@ -1,0 +1,54 @@
+{
+    "best_model_name": "Random Forest Regressor",
+    "selection_criteria": "Lowest Root Mean Squared Error (RMSE) and highest Coefficient of Determination (R\u00b2) on holdout test set.",
+    "train_samples": 492,
+    "test_samples": 90,
+    "metrics_summary": [
+        {
+            "model_name": "Linear Regression",
+            "rmse": 0.7926,
+            "mae": 0.4629,
+            "r2": 0.4605
+        },
+        {
+            "model_name": "Random Forest Regressor",
+            "rmse": 0.6687,
+            "mae": 0.3823,
+            "r2": 0.616
+        },
+        {
+            "model_name": "Gradient-Boosted Trees",
+            "rmse": 0.9066,
+            "mae": 0.4692,
+            "r2": 0.2941
+        }
+    ],
+    "feature_details": {
+        "target_variable": "Yield",
+        "categorical_features": [
+            "State",
+            "Season"
+        ],
+        "numerical_features": [
+            "Year",
+            "Area",
+            "Annual_Rainfall",
+            "Fertilizer",
+            "Pesticide"
+        ],
+        "engineered_features": [
+            "Fertilizer_per_Area",
+            "Pesticide_per_Area"
+        ],
+        "pipeline_stages": [
+            "StringIndexer (State, Season)",
+            "OneHotEncoder (State_Index, Season_Index)",
+            "VectorAssembler (State_Vec, Season_Vec, Numerical Features, Engineered Intensities)",
+            "StandardScaler (Scaling assembled vectors with unit standard deviation)"
+        ],
+        "excluded_features": {
+            "Production": "Post-harvest aggregate directly tied to Yield (Yield = Production / Area); causes target leakage.",
+            "Crop": "Constant for single-crop Cotton models; used only when running cross-crop comparison."
+        }
+    }
+}
