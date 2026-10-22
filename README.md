@@ -280,7 +280,7 @@ cotton-yield-prediction/
 
 ### 2. Clone and Install Dependencies
 ```bash
-git clone https://github.com/vishal05-aakash/big-data-cotton-yield-prediction.git
+git clone https://github.com/Vijayashok25/big-data-cotton-yield-prediction.git
 cd big-data-cotton-yield-prediction
 
 # Install Python requirements
